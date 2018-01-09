@@ -6,20 +6,21 @@ use Phalcon\Di\FactoryDefault;
 use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
 use Phalcon\Events\Manager;
 use Phalcon\Mvc\Micro;
-
+use Phalcon\Mvc\Router;
+use ApiAuth\Middleware\RequestMiddleware;
 // Error level
 error_reporting(E_ALL ^ E_NOTICE);
 
-// Defining Constants 
+// Constants 
 define('DS', DIRECTORY_SEPARATOR);
 define('BASE_PATH', dirname(__DIR__));
 define('APP_PATH', BASE_PATH . DS);
 
-// Application Config
+// Config
 $appConfig = new Ini('config.ini');
 $appServices = $appConfig->services;
 
-// Initializing Vars
+// Vars
 $loadRoutes         = [];
 $loadNamespaces     = [];
 $defaultDirs        = [
@@ -28,8 +29,14 @@ $defaultDirs        = [
 $defaultNamespaces  = [
     'MicroService\Application' => BASE_PATH,
 ];
-// Create Phalcon Dependency Injection
+
+// Micro Application Start
+$phalconMicro              = new Micro($phalconDependencyInjector);
+$eventsManager             = new Manager();
+$phalconLoader             = new Loader();
+$phalconRouter             = new Router();
 $phalconDependencyInjector = new FactoryDefault();
+// Dependency Injection
 $phalconDependencyInjector->set(
     'db',
     function () use ($appConfig) {
@@ -44,10 +51,7 @@ $phalconDependencyInjector->set(
     }
 );
 
-// Micro Application Start
-$phalconMicro = new Micro($phalconDependencyInjector);
-
-// Loading Service Data
+// Services
 foreach ($appServices as $serviceName => $servicePath) {
     $serviceDirectory = BASE_PATH . $servicePath;
     $serviceConfig    = new Ini($serviceDirectory . DS . $appConfig->application->configFile);
@@ -64,25 +68,13 @@ foreach ($appServices as $serviceName => $servicePath) {
         $loadRoutes[$service->name] = $serviceDirectory . $serviceRoute;
     }
 }
-
-// Autoloader
-$phalconLoader = new Loader();
-
-$appNamespaces = array_merge(
-    $defaultNamespaces, 
-    $loadNamespaces
-);
-
-// Autoloading Namespaces
+// Autoloading
+$appNamespaces = array_merge($defaultNamespaces, $loadNamespaces);
 $phalconLoader->registerNamespaces($appNamespaces);
-
-// Autoloading Directories
 $phalconLoader->registerDirs($defaultDirs);
-
-// Autoload Register
 $phalconLoader->register();
 
-// Load Service Routes
+// Routes
 foreach ($loadRoutes as $serviceName => $routePath) {
     $routeFiles = scandir($routePath);
     foreach ($routeFiles as $routeFile) {
@@ -93,6 +85,17 @@ foreach ($loadRoutes as $serviceName => $routePath) {
         }
     }
 }
+
+// Events Manager
+// Header validation
+$eventsManager->attach('micro', new RequestMiddleware());
+$phalconMicro->before(new RequestMiddleware());
+
+// User validation
+// TO DO
+
 // Application Start
+$phalconMicro->setService('router', $phalconRouter, true);
+$phalconMicro->setEventsManager($eventsManager);
 $phalconMicro->handle();
 
