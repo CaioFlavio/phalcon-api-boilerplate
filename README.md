@@ -29,9 +29,11 @@ Implementação de API REST PHP com Framework Phalcon
 ### To Do in Docs
 
 - [x] Add User Guide
+- [ ] Add Running Migrations Guide
 - [ ] Add Methods Explanation
 
 ### To Do in Code
+- [x] Table migrations
 - [ ] Add Token authorization
-- [ ] Add Middleware Validations
+- [ ] Add Middleware Reuq
 - [ ] User ACL
