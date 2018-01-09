@@ -30,13 +30,8 @@ $defaultNamespaces  = [
     'MicroService\Application' => BASE_PATH,
 ];
 
-// Micro Application Start
-$phalconMicro              = new Micro($phalconDependencyInjector);
-$eventsManager             = new Manager();
-$phalconLoader             = new Loader();
-$phalconRouter             = new Router();
-$phalconDependencyInjector = new FactoryDefault();
 // Dependency Injection
+$phalconDependencyInjector = new FactoryDefault();
 $phalconDependencyInjector->set(
     'db',
     function () use ($appConfig) {
@@ -50,6 +45,12 @@ $phalconDependencyInjector->set(
         );
     }
 );
+
+// Micro Application Start
+$phalconMicro              = new Micro($phalconDependencyInjector);
+$eventsManager             = new Manager();
+$phalconLoader             = new Loader();
+// $phalconRouter             = new Router(false);
 
 // Services
 foreach ($appServices as $serviceName => $servicePath) {
@@ -95,7 +96,7 @@ $phalconMicro->before(new RequestMiddleware());
 // TO DO
 
 // Application Start
-$phalconMicro->setService('router', $phalconRouter, true);
+// $phalconMicro->setService('router', $phalconRouter, true);
 $phalconMicro->setEventsManager($eventsManager);
 $phalconMicro->handle();
 

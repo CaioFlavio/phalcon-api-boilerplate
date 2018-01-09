@@ -17,7 +17,7 @@ use ApiAuth\Controller\UsersController;
         "active": (int)
     }
 */
-$phalconRouter->addPost(
+$phalconMicro->post(
     '/user/new',
     [
         new UsersController,
@@ -40,7 +40,7 @@ $phalconRouter->addPost(
         "active": (int)
     }
 */
-$phalconRouter->addPut(
+$phalconMicro->put(
     '/user/activate',
     [
         new UsersController,
