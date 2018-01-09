@@ -5,6 +5,7 @@ Implementação de API REST PHP com Framework Phalcon
 
 1 For use this code you need to install cPhalcon in your webserver
   * Follow the [Phalcon Installation Guide](https://github.com/phalcon/cphalcon) instructions
+  
 2 Add configuration for in your apache vHosts
 ``` 
 <VirtualHost *:80>
