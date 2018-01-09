@@ -6,6 +6,7 @@ use Phalcon\Di\FactoryDefault;
 use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
 use Phalcon\Events\Manager;
 use Phalcon\Mvc\Micro;
+use Phalcon\Mvc\Router;
 use ApiAuth\Middleware\RequestMiddleware;
 // Error level
 error_reporting(E_ALL ^ E_NOTICE);
@@ -33,8 +34,8 @@ $defaultNamespaces  = [
 $phalconMicro              = new Micro($phalconDependencyInjector);
 $eventsManager             = new Manager();
 $phalconLoader             = new Loader();
+$phalconRouter             = new Router();
 $phalconDependencyInjector = new FactoryDefault();
-
 // Dependency Injection
 $phalconDependencyInjector->set(
     'db',
@@ -94,6 +95,7 @@ $phalconMicro->before(new RequestMiddleware());
 // TO DO
 
 // Application Start
+$phalconMicro->setService('router', $phalconRouter, true);
 $phalconMicro->setEventsManager($eventsManager);
 $phalconMicro->handle();
 
