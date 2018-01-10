@@ -17,7 +17,8 @@ define('BASE_PATH', dirname(__DIR__));
 define('APP_PATH', BASE_PATH . DS);
 
 // Config
-$appConfig = new Ini('config.ini');
+$appConfig   = new Ini('config.ini');
+$appFolders  = $appConfig->application->folder;
 $appServices = $appConfig->services;
 
 // Vars
@@ -54,7 +55,7 @@ $phalconLoader             = new Loader();
 
 // Services
 foreach ($appServices as $serviceName => $servicePath) {
-    $serviceDirectory = BASE_PATH . $servicePath;
+    $serviceDirectory = BASE_PATH . $appFolders->services . DS . $servicePath;
     $serviceConfig    = new Ini($serviceDirectory . DS . $appConfig->application->configFile);
     
     // Load Namespaces
