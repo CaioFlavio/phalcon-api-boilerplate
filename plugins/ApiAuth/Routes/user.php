@@ -1,5 +1,11 @@
 <?php
+use Phalcon\Mvc\Micro\Collection as MicroCollection;
 use ApiAuth\Controller\UsersController;
+
+$userRoute = new MicroCollection();
+$userRoute->setHandler('ApiAuth\Controller\UsersController');
+$userRoute->setLazy(true);
+$userRoute->setPrefix('/user');
 
 /* Payload
     {
@@ -17,13 +23,7 @@ use ApiAuth\Controller\UsersController;
         "active": (int)
     }
 */
-$phalconMicro->post(
-    '/user/new',
-    [
-        new UsersController,
-        'newAction',
-    ]
-);
+$userRoute->post('/new', 'newAction');
 
 /* Payload
     {
@@ -40,10 +40,8 @@ $phalconMicro->post(
         "active": (int)
     }
 */
-$phalconMicro->put(
-    '/user/activate',
-    [
-        new UsersController,
-        'activateAction',
-    ]
-);
+$userRoute->put('/activate', 'activateAction');
+
+$userRoute->get('/acl/test/{secret}/{token}', 'testAction', 'Users.test');
+
+$phalconMicro->mount($userRoute);

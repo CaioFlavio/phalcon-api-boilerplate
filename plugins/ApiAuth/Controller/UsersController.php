@@ -4,6 +4,7 @@ namespace ApiAuth\Controller;
 use Phalcon\Http\Request;
 use Phalcon\Mvc\Controller;
 use ApiAuth\Model\Table\Users as User;
+use ApiAuth\Model\Acl\AccessControl;
 
 class UsersController extends Controller
 {
@@ -29,8 +30,13 @@ class UsersController extends Controller
         exit();
     }
 
-    public function batata()
+    public function testAction($secret, $token)
     {
-        echo 'batata';
+        var_dump($this->router->getParams('secret_key'));
+        echo $secret;
+        echo '<br>batata<br>';
+        echo $token;
+        // echo $this->request->getParam('param');
+        // var_dump($this->getActiveHandler());
     }
 }
