@@ -82,8 +82,16 @@ class Response extends PhalconResponse
     public function setUnsuportedMediaTypeResponse($mediaType)
     {
         $this->setApiResponse(415, [
-            'error_code' => '001',
-            "error_message" => "Request type '". $mediaType ."' not supported."
+            'error_code'    => "001",
+            'error_message' => "Request type '". $mediaType ."' not supported."
+        ]);
+    }
+
+    public function setForbidden()
+    {
+        $this->setApiResponse(403,[
+            'error_code'     => "002",
+            'error_message'  => "You're not allowed to access this page"
         ]);
     }
 }
