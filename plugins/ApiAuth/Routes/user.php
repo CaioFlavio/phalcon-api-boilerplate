@@ -44,4 +44,4 @@ $userRoute->put('/activate', 'activate');
 
 $userRoute->get('/acl/test/{secret_key}/{token}', 'test', 'Users.test');
 
-$phalconMicro->mount($userRoute);
+return $userRoute;
