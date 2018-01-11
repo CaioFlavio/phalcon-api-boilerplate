@@ -5,6 +5,7 @@ use Phalcon\Mvc\Micro;
 use Phalcon\Events\Event;
 use Phalcon\Config\Adapter\Ini;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
+use ApiAuth\Model\Table\Users as User;
 use ApiAuth\Model\Http\Response;
 use ApiAuth\Model\Acl\AccessControl;
 
@@ -56,7 +57,7 @@ class AccessMiddleware implements MiddlewareInterface
     public function getUserRole($requestData)
     {
         if(property_exists($requestData, 'secret_key')) {
-            return;
+            $
         } else {
             return 'Guest';
         }
