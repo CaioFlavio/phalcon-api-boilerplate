@@ -9,7 +9,7 @@ use ApiAuth\Model\Acl\AccessControl;
 class UsersController extends Controller
 {
 
-    public function newAction()
+    public function new()
     {
         $request = $this->request;
         $requestData = (object) $this->request->getJsonRawBody(true);
@@ -19,7 +19,7 @@ class UsersController extends Controller
         echo json_encode($user);
     }
 
-    public function activateAction()
+    public function activate()
     {
         $request = $this->request;
         $requestData = (object) $this->request->getJsonRawBody(true);
@@ -30,12 +30,10 @@ class UsersController extends Controller
         exit();
     }
 
-    public function testAction($secret, $token)
+    public function test($secret, $token)
     {
-        var_dump($this->router->getParams('secret_key'));
-        echo $secret;
-        echo '<br>batata<br>';
-        echo $token;
+        var_dump($this);
+        echo 'batata';
         // echo $this->request->getParam('param');
         // var_dump($this->getActiveHandler());
     }

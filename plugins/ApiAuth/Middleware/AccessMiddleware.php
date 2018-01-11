@@ -11,7 +11,13 @@ use ApiAuth\Model\Acl\AccessControl;
 class AccessMiddleware implements MiddlewareInterface
 {
     public $acl;
+    protected $response;
     protected $rolesAccessList;
+
+    public function __construct()
+    {
+        $this->response = new Response;
+    }
 
     protected function getDataByRequestType($application)
     {
@@ -49,7 +55,7 @@ class AccessMiddleware implements MiddlewareInterface
 
     public function getUserRole($requestData)
     {
-        if($property_exists($requestData, 'secret_key')) {
+        if(property_exists($requestData, 'secret_key')) {
             return;
         } else {
             return 'Guest';
@@ -60,22 +66,25 @@ class AccessMiddleware implements MiddlewareInterface
     {
         $request   = $application->request;
         $routeInfo = null;
-        $isAllowed = false;
+        $isAllowed = true;
+        $route     = $application->router->getMatchedRoute();
 
-        if ($route = $application->router->getMatchedRoute()) {
-            $routeInfo = explode('.', $route->getName()); 
+        if (!$route) {
+            $this->response->setNotFound();
+            return false;
         }
 
-        if ($routeInfo) {
+        if ($routeName = $route->getName()) {
             $this->loadRoles();
+            $routeInfo = explode('.', $routeName); 
             $requestData = $this->getDataByRequestType($application);
             $userRole    = $this->getUserRole($requestData, $routeInfo);
-            $isAllowed   = $this->acl->accessControlList->isAllowed($userRole, $routeInfo[0], $routeInfo[1]);
+            $isAllowed   = $this->acl->access->isAllowed($userRole, $routeInfo[0], $routeInfo[1]);
         }
         
         if (!$isAllowed) {
-           $response = new Response;
-           $response->setForbidden();
+           $this->response->setForbidden();
+           return false;
         }
 
         return $isAllowed;
