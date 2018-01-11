@@ -91,7 +91,15 @@ class Response extends PhalconResponse
     {
         $this->setApiResponse(403,[
             'error_code'     => "002",
-            'error_message'  => "You're not allowed to access this page"
+            'error_message'  => "You're not allowed to access this page."
+        ]);
+    }
+
+    public function setNotFound()
+    {
+        $this->setApiResponse(404,[
+            'error_code'     => "003",
+            'error_message'  => "The page you are looking for couldn't be found."
         ]);
     }
 }

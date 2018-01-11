@@ -76,7 +76,7 @@ $phalconDependencyInjector->set(
 );
 $phalconDependencyInjector->set(
     'router',
-    function () use ($loadRoutes, $phalconRouter, $phalconDependencyInjector, $phalconMicro) {
+    function () use ($loadRoutes, $phalconRouter, $phalconMicro) {
         // Routes
         foreach ($loadRoutes as $serviceName => $routePath) {
             $routeFiles = scandir($routePath);

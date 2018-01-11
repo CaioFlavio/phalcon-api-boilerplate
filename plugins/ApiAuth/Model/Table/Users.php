@@ -7,17 +7,18 @@ use Phalcon\Validation;
 use Phalcon\Validation\Validator\Uniqueness;
 use ApiAuth\Model\Model;
 use ApiAuth\Model\Table\Tokens as Token;
+use ApiAuth\Model\Table\UserRoles as Role; 
 
 class Users extends Model
 {
-    public $username;
     protected $id;
-    protected $token_id;
-    protected $secret_key;
-    protected $webhook_url;
     protected $created_at;
-    protected $updated_at;
-    protected $active;
+    public $username;
+    public $token_id;
+    public $secret_key;
+    public $webhook_url;
+    public $updated_at;
+    public $active;
 
     public function initialize()
     {
@@ -36,6 +37,18 @@ class Users extends Model
                         'status' => 1,
                     ],
                     'order'      => 'id DESC'
+                ]
+            ]
+        );
+
+        $this->belongsTo(
+            'role_id',
+            '\ApiAuth\Model\Table\UserRoles',
+            'id',
+            [
+                'alias'  => 'Role',
+                'params' => [
+                    'conditions' => 'active = 1'
                 ]
             ]
         );

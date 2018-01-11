@@ -4,14 +4,14 @@ use Phalcon\Db\Index as Index;
 use Phalcon\Config\Adapter\Ini;
 use Phalcon\Db\Reference as Reference;
 use Phalcon\Mvc\Model\Migration;
+use \TrackingApi\Application;
 
-class TokensMigration_1 extends Migration
+class UserRolesMigration_2 extends Migration
 {
-    public function up()
-    {
+    public function up() {
         $config = new Ini(dirname(__DIR__) . '\..\..\..\app\config.ini');
         $this->morphTable(
-            'tokens',
+            'user_roles',
             [
                 'columns' => [
                     new Column(
@@ -26,31 +26,20 @@ class TokensMigration_1 extends Migration
                         ]
                     ),
                     new Column(
-                        'user_id',
+                        'role',
                         [
-                            'type'     => Column::TYPE_INTEGER,
-                            'size'     => 10,
-                            'unsigned' => true,
-                            'notNull'  => true,
-                            'after'    => 'id',
+                            'type'          => Column::TYPE_VARCHAR,
+                            'size'          => 255,
+                            'notNull'       => true,
                         ]
                     ),
                     new Column(
-                        'token',
+                        'grant_all',
                         [
-                            'type'     => Column::TYPE_VARCHAR,
-                            'size'     => 255,
-                            'unsigned' => true,
-                            'notNull'  => true,
-                            'after'    => 'secret_key',
-                        ]
-                    ),
-                    new Column(
-                        'expires_at',
-                        [
-                            'type'    => Column::TYPE_DATETIME,
+                            'type'    => Column::TYPE_INTEGER,
+                            'size'    => 1,
                             'notNull' => true,
-                            'after'   => 'token',
+                            'after'   => 'updated_at',
                         ]
                     ),
                     new Column(
@@ -86,28 +75,26 @@ class TokensMigration_1 extends Migration
                             'id',
                         ]
                     ),
-                ],
-                'references' => [
-                    new Reference(
-                        'user_id_fk',
-                        [
-                            'referencedSchema'  => $config->database->dbname,
-                            'referencedTable'   => 'users',
-                            'columns'           => [
-                                'user_id',
-                            ],
-                            'referencedColumns' => [
-                                'id',
-                            ],
-                        ]
-                    ),
-                ],
-                'options' => [
-                    'TABLE_TYPE'      => 'BASE TABLE',
-                    'ENGINE'          => 'InnoDB',
-                    'TABLE_COLLATION' => 'utf8_general_ci',
-                ],
+                ]
             ]
-        );     
+        );
+
+        self::$_connection->addForeignKey(
+            'users',
+            self::getDbName(),
+            new Reference(
+                'user_role_fk',
+                [
+                    "referencedSchema"  => self::getDbName(),
+                    'referencedTable'   => 'user_roles',
+                    'columns'           => [
+                        'role_id',
+                    ],
+                    'referencedColumns' => [
+                        'id',
+                    ],
+                ]
+            )
+        );
     }
 }
