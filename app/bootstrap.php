@@ -84,10 +84,21 @@ $phalconDependencyInjector->set(
                 $currentRoute = $routePath . DS . $routeFile;
                 $fileExtension = new SplFileInfo($currentRoute);
                 if (strtolower($fileExtension->getExtension()) === 'php') {
-                    require_once($routePath . DS . $routeFile);
+                    $collection = require_once($routePath . DS . $routeFile);
+                    if ($collection instanceof \Phalcon\Mvc\Micro\CollectionInterface){
+                        $microCollections[] = $collection;
+                    }
                 }
             }
         }
+
+        // Mount MicroCollections
+        if (is_array($microCollections)) {
+            foreach ($microCollections as $microCollection) {
+                $phalconMicro->mount($microCollection);
+            }
+        }
+
         $phalconRouter->handle();
         return $phalconRouter;
     }
