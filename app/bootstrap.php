@@ -36,7 +36,7 @@ $defaultNamespaces  = [
 // Plugin routes
 $phalconRouter = new Router(false);
 foreach ($appServices as $serviceName => $servicePath) {
-    $serviceDirectory = BASE_PATH . $appFolders->services . DS . $servicePath;
+    $serviceDirectory = BASE_PATH . $appFolders->services . $servicePath;
     $serviceConfig    = new Ini($serviceDirectory . DS . $appConfig->application->configFile);
     
     // Load Namespaces
@@ -48,7 +48,7 @@ foreach ($appServices as $serviceName => $servicePath) {
 
     // Load Routes
     if ($serviceRoute = $serviceConfig->initialize->routes) {
-        $loadRoutes[$service->name] = $serviceDirectory . $serviceRoute;
+        $loadRoutes[$serviceName] = $serviceDirectory . $serviceRoute;
     }
 }
 
@@ -84,10 +84,21 @@ $phalconDependencyInjector->set(
                 $currentRoute = $routePath . DS . $routeFile;
                 $fileExtension = new SplFileInfo($currentRoute);
                 if (strtolower($fileExtension->getExtension()) === 'php') {
-                    require_once($routePath . DS . $routeFile);
+                    $collection = require_once($routePath . DS . $routeFile);
+                    if ($collection instanceof \Phalcon\Mvc\Micro\CollectionInterface){
+                        $microCollections[] = $collection;
+                    }
                 }
             }
         }
+
+        // Mount MicroCollections
+        if (is_array($microCollections)) {
+            foreach ($microCollections as $microCollection) {
+                $phalconMicro->mount($microCollection);
+            }
+        }
+
         $phalconRouter->handle();
         return $phalconRouter;
     }
