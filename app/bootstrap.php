@@ -36,7 +36,7 @@ $defaultNamespaces  = [
 // Plugin routes
 $phalconRouter = new Router(false);
 foreach ($appServices as $serviceName => $servicePath) {
-    $serviceDirectory = BASE_PATH . $appFolders->services . DS . $servicePath;
+    $serviceDirectory = BASE_PATH . $appFolders->services . $servicePath;
     $serviceConfig    = new Ini($serviceDirectory . DS . $appConfig->application->configFile);
     
     // Load Namespaces
@@ -48,7 +48,7 @@ foreach ($appServices as $serviceName => $servicePath) {
 
     // Load Routes
     if ($serviceRoute = $serviceConfig->initialize->routes) {
-        $loadRoutes[$service->name] = $serviceDirectory . $serviceRoute;
+        $loadRoutes[$serviceName] = $serviceDirectory . $serviceRoute;
     }
 }
 
