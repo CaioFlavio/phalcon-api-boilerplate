@@ -57,10 +57,15 @@ class AccessMiddleware implements MiddlewareInterface
     public function getUserRole($requestData)
     {
         if(property_exists($requestData, 'secret_key')) {
-            $
-        } else {
-            return 'Guest';
+            var_dump($requestData->secret_key);
+            $user     = User::findBySecret($requestData->secret_key);
+            $userRole = $user->getRole();
+            if (!$userRole) {
+                return false;
+            } 
+            return $userRole;
         }
+        return false;
     }
 
     public function beforeHandleRoute(Event $event, Micro $application)
@@ -80,9 +85,13 @@ class AccessMiddleware implements MiddlewareInterface
             $routeInfo = explode('.', $routeName); 
             $requestData = $this->getDataByRequestType($application);
             $userRole    = $this->getUserRole($requestData, $routeInfo);
+            $roleName    = ($userRole) ? $userRole->getName() : 'Guest';
+            if ($userRole->isAdmin()) {
+                return true;
+            }
             $isAllowed   = $this->acl->access->isAllowed($userRole, $routeInfo[0], $routeInfo[1]);
         }
-        
+
         if (!$isAllowed) {
            $this->response->setForbidden();
            return false;
