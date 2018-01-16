@@ -1,7 +1,7 @@
 <?php
 use Phalcon\Db\Column as Column;
 use Phalcon\Db\Index as Index;
-use Phalcon\Config\Adapter\Ini;
+use Phalcon\Config\Adapter\Json;
 use Phalcon\Db\Reference as Reference;
 use Phalcon\Mvc\Model\Migration;
 use \TrackingApi\Application;
@@ -9,7 +9,7 @@ use \TrackingApi\Application;
 class UserRolesMigration_2 extends Migration
 {
     public function up() {
-        $config = new Ini(dirname(__DIR__) . '\..\..\..\app\config.ini');
+        $config = new Json(dirname(__DIR__) . '\..\..\..\app\config.json');
         $this->morphTable(
             'user_roles',
             [
