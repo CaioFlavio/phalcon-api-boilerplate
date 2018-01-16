@@ -30,11 +30,8 @@ class UsersController extends Controller
         exit();
     }
 
-    public function test($secret, $token)
+    public function test()
     {
-        var_dump($this);
-        echo 'batata';
-        // echo $this->request->getParam('param');
-        // var_dump($this->getActiveHandler());
+        echo json_encode(["code" => '000', "message" => "Hello!!! Your API is working fine."]);
     }
 }
