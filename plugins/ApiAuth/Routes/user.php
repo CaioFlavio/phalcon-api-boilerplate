@@ -42,6 +42,6 @@ $userRoute->post('/new', 'new');
 */
 $userRoute->put('/activate', 'activate');
 
-$userRoute->get('/acl/test/{secret_key}/{token}', 'test', 'Users.test');
+$userRoute->get('/api/test', 'test');
 
 return $userRoute;

@@ -3,7 +3,7 @@ namespace ApiAuth\Middleware;
 
 use Phalcon\Mvc\Micro;
 use Phalcon\Events\Event;
-use Phalcon\Config\Adapter\Ini;
+use Phalcon\Config\Adapter\Json;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
 use ApiAuth\Model\Table\Users as User;
 use ApiAuth\Model\Http\Response;
@@ -42,13 +42,13 @@ class AccessMiddleware implements MiddlewareInterface
     
     protected function loadRoles()
     {
-        $appConfig    = new Ini(BASE_PATH . DS . 'app' . DS . 'config.ini');
+        $appConfig    = new Json(BASE_PATH . DS . 'app' . DS . 'config.json');
         $plugin       = reset(explode("\\", __NAMESPACE__));
-        $pluginConfig = new Ini(BASE_PATH . $appConfig->application->folder->services . DS . $plugin . DS . $appConfig->application->configFile);
+        $pluginConfig = new Json(BASE_PATH . $appConfig->application->folder->services . DS . $plugin . DS . $appConfig->application->configFile);
         $accessRoles = [];
         foreach ($pluginConfig->acl as $roleName => $controllers){
             foreach ($controllers as $controllerName => $actions) {
-                $accessRoles[$roleName][$controllerName] = explode(',', $actions);
+                $accessRoles[$roleName][$controllerName] = (array) $actions;
             }
         } 
         $this->acl = new AccessControl($accessRoles);
@@ -57,9 +57,8 @@ class AccessMiddleware implements MiddlewareInterface
     public function getUserRole($requestData)
     {
         if(property_exists($requestData, 'secret_key')) {
-            var_dump($requestData->secret_key);
             $user     = User::findBySecret($requestData->secret_key);
-            $userRole = $user->getRole();
+            $userRole = ($user) ? $user->getRole() : false;
             if (!$userRole) {
                 return false;
             } 
@@ -84,12 +83,16 @@ class AccessMiddleware implements MiddlewareInterface
             $this->loadRoles();
             $routeInfo = explode('.', $routeName); 
             $requestData = $this->getDataByRequestType($application);
-            $userRole    = $this->getUserRole($requestData, $routeInfo);
-            $roleName    = ($userRole) ? $userRole->getName() : 'Guest';
-            if ($userRole->isAdmin()) {
-                return true;
+            if (is_object($requestData)) {
+                $userRole    = $this->getUserRole($requestData, $routeInfo);
+                $roleName    = ($userRole) ? $userRole->getName() : 'Guest';
+                if ($userRole && $userRole->isAdmin()) {
+                    return true;
+                }
+                $isAllowed = $this->acl->access->isAllowed($userRole, $routeInfo[0], $routeInfo[1]);
+            } else {
+                return $requestData;
             }
-            $isAllowed   = $this->acl->access->isAllowed($userRole, $routeInfo[0], $routeInfo[1]);
         }
 
         if (!$isAllowed) {

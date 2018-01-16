@@ -1,6 +1,6 @@
 <?php
 
-use Phalcon\Config\Adapter\Ini;
+use Phalcon\Config\Adapter\Json;
 use Phalcon\Loader;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
@@ -19,7 +19,7 @@ define('BASE_PATH', dirname(__DIR__));
 define('APP_PATH', BASE_PATH . DS);
 
 // Config
-$appConfig   = new Ini('config.ini');
+$appConfig   = new Json(APP_PATH . 'app' . DS . 'config.json');
 $appFolders  = $appConfig->application->folder;
 $appServices = $appConfig->services;
 
@@ -37,7 +37,7 @@ $defaultNamespaces  = [
 $phalconRouter = new Router(false);
 foreach ($appServices as $serviceName => $servicePath) {
     $serviceDirectory = BASE_PATH . $appFolders->services . $servicePath;
-    $serviceConfig    = new Ini($serviceDirectory . DS . $appConfig->application->configFile);
+    $serviceConfig    = new Json($serviceDirectory . DS . $appConfig->application->configFile);
     
     // Load Namespaces
     if ($serviceNamespaces = $serviceConfig->namespaces) {

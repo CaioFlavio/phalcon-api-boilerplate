@@ -1,0 +1,28 @@
+{
+    "initialize" : {
+        "model": "/Model",
+        "routes": "/Routes",
+        "controller": "/Controller" 
+    },    
+    "database": {
+        "host":     "localhost",
+        "dbname":   "api",
+        "adapter":  "Mysql",
+        "username": "root",
+        "password": ""
+    },
+    "application" : {
+        "configFile" : "config.json",
+        "folder": {
+            "config": "/config",
+            "routes": "/Routes",
+            "models": "/Model",
+            "services": "/plugins",
+            "migrations": "/Migrations",
+            "controllers": "/Controller"
+        }
+    }, 
+    "services":{
+        "ApiAuth" : "/ApiAuth"
+    }
+}

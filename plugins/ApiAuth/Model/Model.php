@@ -1,7 +1,7 @@
 <?php
 namespace ApiAuth\Model;
 
-use Phalcon\Config\Adapter\Ini;
+use Phalcon\Config\Adapter\Json;
 use Phalcon\Mvc\Model as PhalconModel;
 
 class Model extends PhalconModel
@@ -20,7 +20,7 @@ class Model extends PhalconModel
 
     public function getConfig($type)
     {
-        $config = new Ini(APP_PATH . 'config/config.ini');
+        $config = new Json(APP_PATH . 'config/config.json');
         if (!is_null($type)) {
             return $config->{$type};
         }
